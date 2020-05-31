@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
-project("C++ Project Template" LANGUAGES CXX)
+project("Wally Finder" LANGUAGES CXX)
 
-set(CPACK_PACKAGE_NAME "cpp-project")
-set(CPACK_PACKAGE_VERSION_MAJOR "0")
+set(CPACK_PACKAGE_NAME "wallyfinder")
+set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 set(VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH})
@@ -38,12 +38,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     endif()
 endif()
 
-# OpenMP support
-find_package(OpenMP)
-
-# OpenCV dependency
-find_package(OpenCV REQUIRED)
-
 # Dependency management
 include(FetchContent)
 
@@ -53,14 +47,27 @@ FetchContent_Declare(
     dlib
     GIT_REPOSITORY https://github.com/davisking/dlib.git
     GIT_TAG        ${DLIB_TAG}
-    SOURCE_DIR     ${PROJECT_SOURCE_DIR}/external
+    SOURCE_DIR     ${PROJECT_SOURCE_DIR}/external/dlib
 )
+
+# pybind11
+set(PYBIND11_TAG v2.5.0)
+FetchContent_Declare(
+    pybind11
+    GIT_REPOSITORY https://github.com/pybind/pybind11.git
+    GIT_TAG        ${PYBIND11_TAG}
+    SOURCE_DIR     ${PROJECT_SOURCE_DIR}/external/pybind11
+)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+message("-- Fetching pybind11 ${PYBIND11_TAG}")
+FetchContent_MakeAvailable(pybind11)
 
 message("-- Fetching dlib ${DLIB_TAG}")
 FetchContent_MakeAvailable(dlib)
 
-add_executable(main src/main.cpp)
-target_link_libraries(main PRIVATE dlib::dlib OpenMP::OpenMP_CXX ${OpenCV_LIBS})
-target_include_directories(main PRIVATE src ${OpenCV_INCLUDE_DIRS})
-target_compile_options(main PRIVATE -Wall -Wextra -pedantic -Wno-deprecated-copy)
-install(TARGETS main DESTINATION bin)
+add_library(detector STATIC src/detector.cpp)
+target_link_libraries(detector PRIVATE dlib::dlib)
+pybind11_add_module(wallyfinder src/wallyfinder.cpp)
+target_link_libraries(wallyfinder PRIVATE dlib::dlib detector)
+set_property(TARGET wallyfinder PROPERTY POSITION_INDEPENDENT_CODE ON)
