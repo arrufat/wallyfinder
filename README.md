@@ -10,7 +10,7 @@ The training code is based upon the [dlib](http://dlib.net) [example for trainin
 The only thing I changed was the network architecture to be able to detect objects as small as 24x24 pixels.
 
 The definition of the network architecture can be found in [`src/detector.h`](src/detector.h).
-The trained model has 7 convolutional layers and is only 350 kB, so I decided to embed it into the code directly.
+The trained model has 7 convolutional layers and weighs only 350 kB, so I decided to embed it into the code directly.
 To that end, I used the powerful [`serialize`](http://dlib.net/other.html#serialize) function family from [dlib](http://dlib.net).
 The model has been serialized into a bytestring, then compressed and finally converted to base 64.
 
@@ -26,16 +26,8 @@ These dependencies are only needed at build time, not at run-time:
 
 These dependencies are needed at both build-time and run-time:
 - `python` `>=3.6`
-- `CUDA` `>=7.5` (optionaL: it will use CPU instead if not found)
+- `CUDA` `>=7.5` (optional: it will use CPU instead if not found)
 - `CUDNN` `>=5` (optional: it will use CPU instead if not found)
-
-## Building
-
-A `build.sh` script is provided to simplify the build process, just run:
-
-``` bash
-./build.sh
-```
 
 ## Building and installing the python module
 
