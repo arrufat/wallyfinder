@@ -6,16 +6,15 @@ A simple solver for ["Where's Wally"](https://en.wikipedia.org/wiki/Where%27s_Wa
 
 This repository contains a deep convolutional neural network trained to find Wally (aka Waldo).
 
-The training code is based upon the [dlib](http://dlib.net) [example for training cars](http://dlib.net/dnn_mmod_train_find_cars_ex.cpp.html)
+The training code is based upon the [dlib](http://dlib.net) [example for training a car detector](http://dlib.net/dnn_mmod_train_find_cars_ex.cpp.html).
+The only thing I changed was the network architecture to be able to detect objects as small as 24x24 pixels.
 
-However, the network architecture has been modified to be able to detect objects as small as 24x24 pixels.
-
-The definition of the network model can be found in [`src/detector.h`].
-The trained model has 7 convolutional layers and is only 336 kB, so I decided to embed it into the code directly.
+The definition of the network architecture can be found in [`src/detector.h`](src/detector.h).
+The trained model has 7 convolutional layers and is only 350 kB, so I decided to embed it into the code directly.
 To that end, I used the powerful [`serialize`](http://dlib.net/other.html#serialize) function family from [dlib](http://dlib.net).
 The model has been serialized into a bytestring, then compressed and finally converted to base 64.
 
-As a result, instantiating the `WallyFinder` class is enough to get a fully working model that, when given an image, will return a list of dictonaries with `xmin`, `ymin`, `xmax`, `ymax` that describe each bounding box.
+As a result, instantiating the `WallyFinder` class from python code is enough to get a fully working model that, when run on an image, will return a list of dictonaries with `xmin`, `ymin`, `xmax`, `ymax` that describe each bounding box.
 
 ## Dependencies
 
